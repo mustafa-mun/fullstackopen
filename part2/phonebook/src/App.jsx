@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import personService from "./services/persons";
+import "./index.css";
 
 const Filter = ({ newFilter, handleFilterChange }) => {
   return (
@@ -27,13 +28,18 @@ const PersonForm = (props) => {
   );
 };
 
-const Persons = ({ persons, setPersons }) => {
+const Persons = ({ persons, setPersons, setNotificationMessage }) => {
   const handleDelete = (id, name) => {
     if (confirm(`Delete ${name} ?`)) {
       personService
         .deletePerson(id)
         .then(() => setPersons(persons.filter((person) => person.id !== id)))
-        .catch((err) => console.log(err));
+        .catch(() => {
+          setNotificationMessage({
+            body: `${name} is already deleted`,
+            type: "error",
+          });
+        });
     }
   };
 
@@ -53,16 +59,32 @@ const Persons = ({ persons, setPersons }) => {
   );
 };
 
+const Notification = ({ message }) => {
+  if (!message.body) return null;
+
+  return <div className={message.type}>{message.body}</div>;
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
 
   const [newNumber, setNewNumber] = useState("");
   const [newName, setNewName] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState({
+    body: null,
+    type: null,
+  });
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => setPersons(initialPersons));
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setNotificationMessage({ body: null, type: null });
+    }, 5000);
+  }, [notificationMessage]);
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -105,8 +127,12 @@ const App = () => {
               setNewName("");
               setNewNumber("");
             })
-
-            .catch((err) => console.log(err));
+            .catch(() => {
+              setNotificationMessage({
+                body: `Information of ${personObject.name} has already been removed from the server`,
+                type: "error",
+              });
+            });
         }
         return;
       }
@@ -116,14 +142,19 @@ const App = () => {
       .then((newPerson) => console.log(newPerson))
       .catch((err) => console.log(err));
 
+    setNotificationMessage({
+      body: `Added ${personObject.name}`,
+      type: "success",
+    });
+
     setPersons(persons.concat(personObject));
     setNewName("");
     setNewNumber("");
   };
-
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage}></Notification>
       <Filter
         newFilter={newFilter}
         handleFilterChange={handleFilterChange}
@@ -137,7 +168,11 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       ></PersonForm>
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} setPersons={setPersons}></Persons>
+      <Persons
+        persons={personsToShow}
+        setPersons={setPersons}
+        setNotificationMessage={setNotificationMessage}
+      ></Persons>
     </div>
   );
 };
