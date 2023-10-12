@@ -127,9 +127,9 @@ const App = () => {
               setNewName("");
               setNewNumber("");
             })
-            .catch(() => {
+            .catch((err) => {
               setNotificationMessage({
-                body: `Information of ${personObject.name} has already been removed from the server`,
+                body: err.message,
                 type: "error",
               });
             });
@@ -139,15 +139,21 @@ const App = () => {
     }
     personService
       .create(personObject)
-      .then((newPerson) => console.log(newPerson))
-      .catch((err) => console.log(err));
+      .then((newPerson) => {
+        setPersons(persons.concat(newPerson));
+      })
+      .catch((err) => {
+        setNotificationMessage({
+          body: err.message,
+          type: "error",
+        });
+      });
 
     setNotificationMessage({
       body: `Added ${personObject.name}`,
       type: "success",
     });
 
-    setPersons(persons.concat(personObject));
     setNewName("");
     setNewNumber("");
   };
