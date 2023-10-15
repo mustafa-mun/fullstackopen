@@ -129,7 +129,7 @@ const App = () => {
             })
             .catch((err) => {
               setNotificationMessage({
-                body: err.message,
+                body: err.response.data.error,
                 type: "error",
               });
             });
@@ -144,7 +144,7 @@ const App = () => {
       })
       .catch((err) => {
         setNotificationMessage({
-          body: err.message,
+          body: err.response.data.error,
           type: "error",
         });
       });
