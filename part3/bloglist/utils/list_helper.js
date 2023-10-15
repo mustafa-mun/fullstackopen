@@ -46,9 +46,32 @@ const mostBlogs = (blogs) => {
   return output;
 };
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) return {};
+
+  const output = { author: "", likes: 0 };
+
+  const counter = {};
+
+  blogs.forEach((blog) => {
+    if (counter[blog.author]) {
+      counter[blog.author] += blog.likes;
+      if (counter[blog.author] > output.likes) {
+        output.author = blog.author;
+        output.likes = counter[blog.author];
+      }
+    } else {
+      counter[blog.author] = blog.likes;
+    }
+  });
+
+  return output;
+};
+
 module.exports = {
   dummy,
   mostBlogs,
   totalLikes,
   favoriteBlog,
+  mostLikes,
 };
