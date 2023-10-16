@@ -73,6 +73,45 @@ test("identifier named id", async () => {
   expect(response.body[0].id).toBeDefined();
 });
 
+test("http POST creates a new blog post", async () => {
+  const post = {
+    title: "First class tests 2",
+    author: "Robert C. Martin 2",
+    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll2",
+    likes: 10,
+    __v: 0,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(post)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+
+  const titles = response.body.map((blog) => blog.title);
+
+  expect(response.body.length).toBe(initialBlogs.length + 1);
+  expect(titles).toContain("First class tests 2");
+});
+
+test("likes will have default value '0'", async () => {
+  const post = {
+    title: "First class tests 3",
+    author: "Robert C. Martin 3",
+    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll3",
+  };
+
+  const resp = await api
+    .post("/api/blogs")
+    .send(post)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  expect(resp.body.likes).toBe(0);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
