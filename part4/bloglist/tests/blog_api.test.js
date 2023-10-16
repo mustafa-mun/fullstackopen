@@ -47,69 +47,118 @@ beforeEach(async () => {
   await Promise.all(savedBlogs);
 });
 
-test("blogs are returned as json", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("GET Requests", () => {
+  test("blogs are returned as json", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  }, 100000);
+
+  test("all blogs are returned", async () => {
+    const response = await api.get("/api/blogs");
+
+    expect(response.body).toHaveLength(initialBlogs.length);
+  });
+
+  test("a specific note is within the returned blogs", async () => {
+    const response = await api.get("/api/blogs");
+
+    const titles = response.body.map((r) => r.title);
+    expect(titles).toContain("First class tests");
+  });
+
+  test("identifier named id", async () => {
+    const response = await api.get("/api/blogs");
+
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
-test("all blogs are returned", async () => {
-  const response = await api.get("/api/blogs");
+describe("POST Requests", () => {
+  test("http POST creates a new blog post", async () => {
+    const post = {
+      title: "First class tests 2",
+      author: "Robert C. Martin 2",
+      url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll2",
+      likes: 10,
+      __v: 0,
+    };
 
-  expect(response.body).toHaveLength(initialBlogs.length);
+    await api
+      .post("/api/blogs")
+      .send(post)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const response = await api.get("/api/blogs");
+
+    const titles = response.body.map((blog) => blog.title);
+
+    expect(response.body.length).toBe(initialBlogs.length + 1);
+    expect(titles).toContain("First class tests 2");
+  });
+
+  test("likes will have default value '0'", async () => {
+    const post = {
+      title: "First class tests 3",
+      author: "Robert C. Martin 3",
+      url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll3",
+    };
+
+    const resp = await api
+      .post("/api/blogs")
+      .send(post)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    expect(resp.body.likes).toBe(0);
+  });
+
+  test("returns 400 if url title or url is missing", async () => {
+    const post = {
+      author: "Robert C. Martin 3",
+      url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll3",
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(post)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const response = await api.get("/api/blogs");
+
+    expect(response.body.length).toBe(initialBlogs.length);
+  });
 });
 
-test("a specific note is within the returned blogs", async () => {
-  const response = await api.get("/api/blogs");
+describe("DELETE Requests", () => {
+  test("DELETE Request deletes blog", async () => {
+    await api.delete("/api/blogs/5a422b891b54a676234d17fa").expect(204);
+    const response = await api.get("/api/blogs");
+    const ids = response.body.map((blog) => blog.id);
 
-  const titles = response.body.map((r) => r.title);
-  expect(titles).toContain("First class tests");
+    expect(ids).not.toContain("5a422b891b54a676234d17fa");
+    expect(response.body.length).toBe(initialBlogs.length - 1);
+  });
 });
 
-test("identifier named id", async () => {
-  const response = await api.get("/api/blogs");
+describe("PUT Requests", () => {
+  test("PUT Request updates blog", async () => {
+    await api
+      .put("/api/blogs/5a422b891b54a676234d17fa")
+      .send({ likes: 22 })
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
 
-  expect(response.body[0].id).toBeDefined();
-});
+    const response = await api.get("/api/blogs");
+    const initialBlog = response.body.find(
+      (blog) => blog.id === "5a422b891b54a676234d17fa"
+    );
 
-test("http POST creates a new blog post", async () => {
-  const post = {
-    title: "First class tests 2",
-    author: "Robert C. Martin 2",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll2",
-    likes: 10,
-    __v: 0,
-  };
-
-  await api
-    .post("/api/blogs")
-    .send(post)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
-
-  const response = await api.get("/api/blogs");
-
-  const titles = response.body.map((blog) => blog.title);
-
-  expect(response.body.length).toBe(initialBlogs.length + 1);
-  expect(titles).toContain("First class tests 2");
-});
-
-test("likes will have default value '0'", async () => {
-  const post = {
-    title: "First class tests 3",
-    author: "Robert C. Martin 3",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll3",
-  };
-
-  const resp = await api
-    .post("/api/blogs")
-    .send(post)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
-
-  expect(resp.body.likes).toBe(0);
+    expect(initialBlog.likes).toBe(22);
+  });
 });
 
 afterAll(async () => {
