@@ -68,8 +68,10 @@ test("a specific note is within the returned blogs", async () => {
 });
 
 test("identifier named id", async () => {
-  const response = await api.get("api/blogs")
-})
+  const response = await api.get("/api/blogs");
+
+  expect(response.body[0].id).toBeDefined();
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
