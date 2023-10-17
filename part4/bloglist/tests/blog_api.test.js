@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
+const bcrypt = require("bcrypt");
+const User = require("../models/user");
 const Blog = require("../models/blog");
 
 const api = supertest(app);
@@ -47,7 +49,7 @@ beforeEach(async () => {
   await Promise.all(savedBlogs);
 });
 
-describe("GET Requests", () => {
+describe("GET blog Requests", () => {
   test("blogs are returned as json", async () => {
     await api
       .get("/api/blogs")
@@ -75,7 +77,7 @@ describe("GET Requests", () => {
   });
 });
 
-describe("POST Requests", () => {
+describe("POST blog Requests", () => {
   test("http POST creates a new blog post", async () => {
     const post = {
       title: "First class tests 2",
@@ -133,7 +135,7 @@ describe("POST Requests", () => {
   });
 });
 
-describe("DELETE Requests", () => {
+describe("DELETE blog Requests", () => {
   test("DELETE Request deletes blog", async () => {
     await api.delete("/api/blogs/5a422b891b54a676234d17fa").expect(204);
     const response = await api.get("/api/blogs");
@@ -144,7 +146,7 @@ describe("DELETE Requests", () => {
   });
 });
 
-describe("PUT Requests", () => {
+describe("PUT blog Requests", () => {
   test("PUT Request updates blog", async () => {
     await api
       .put("/api/blogs/5a422b891b54a676234d17fa")
@@ -158,6 +160,64 @@ describe("PUT Requests", () => {
     );
 
     expect(initialBlog.likes).toBe(22);
+  });
+});
+
+describe("POST user requests with one user", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash("sekret", 10);
+    const user = new User({
+      username: "root",
+      password: passwordHash,
+      name: "rootuser",
+    });
+
+    await user.save();
+  });
+
+  test("creation succeds", async () => {
+    const initialUsersInDb = await User.find({});
+
+    const newUser = { username: "user", password: "pass123", name: "usr" };
+
+    await api
+      .post("/api/users")
+      .send(newUser)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    const currentUsersInDb = await User.find({});
+    expect(currentUsersInDb.length).toBe(initialUsersInDb.length + 1);
+  });
+
+  test("returns status code '400' if password or username is missing from request", async () => {
+    const initialUsersInDb = await User.find({});
+
+    const newUserOne = { password: "pass123", name: "usr" };
+    const newUserTwo = { username: "user", name: "usr" };
+
+    await api.post("/api/users").send(newUserOne).expect(400);
+
+    await api.post("/api/users").send(newUserTwo).expect(400);
+
+    const currentUsersInDb = await User.find({});
+    expect(currentUsersInDb.length).toBe(initialUsersInDb.length);
+  });
+
+  test("returns status code '400' if password's or username's length is less than 3", async () => {
+    const initialUsersInDb = await User.find({});
+
+    const newUserOne = { username: "us", password: "pass123", name: "usr" };
+    const newUserTwo = { username: "user", password: "pa", name: "usr" };
+
+    await api.post("/api/users/").send(newUserOne).expect(400);
+
+    await api.post("/api/users/").send(newUserTwo).expect(400);
+
+    const currentUsersInDb = await User.find({});
+    expect(currentUsersInDb.length).toBe(initialUsersInDb.length);
   });
 });
 
