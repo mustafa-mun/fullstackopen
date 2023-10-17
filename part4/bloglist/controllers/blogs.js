@@ -36,10 +36,11 @@ blogsRouter.post("/", async (request, response, next) => {
 
 blogsRouter.delete("/:id", async (request, response, next) => {
   try {
-    const blog = await Blog.findByIdAndDelete(request.params.id);
+    const blog = await Blog.findById(request.params.id);
     if (blog.user.toString() !== request.user._id.toString()) {
       return response.status(403).json({ error: "unauthorized" });
     }
+    await Blog.deleteOne({ _id: blog._id });
     response.status(204).end();
   } catch (error) {
     next(error);
@@ -48,6 +49,11 @@ blogsRouter.delete("/:id", async (request, response, next) => {
 
 blogsRouter.put("/:id", async (request, response, next) => {
   try {
+    const blog = await Blog.findById(request.params.id);
+    if (blog.user.toString() !== request.user._id.toString()) {
+      return response.status(403).json({ error: "unauthorized" });
+    }
+
     const updatedBlog = await Blog.findByIdAndUpdate(
       request.params.id,
       request.body,
