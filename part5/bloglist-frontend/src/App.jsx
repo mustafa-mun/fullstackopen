@@ -3,13 +3,21 @@ import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [notification, setNotification] = useState({ type: "", body: "" });
   const [user, setUser] = useState(null);
+
+  const handleNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification("");
+    }, 5000);
+  };
 
   const handleLogin = (event) => {
     event.preventDefault();
@@ -20,7 +28,12 @@ const App = () => {
         blogService.setToken(user.token);
         localStorage.setItem("loggedInUser", JSON.stringify(user));
       })
-      .catch((err) => console.log(err));
+      .catch(() => {
+        handleNotification({
+          type: "error",
+          message: "wrong username or password",
+        });
+      });
     setPassword("");
     setUsername("");
   };
@@ -46,40 +59,41 @@ const App = () => {
     }
   }, []);
 
-  if (user === null) {
-    return (
-      <div>
-        <h2>log in to application</h2>
-        <LoginForm
-          username={username}
-          password={password}
-          handleLogin={handleLogin}
-          handleUsername={handleUsernameChange}
-          handlePassword={handlePasswordChange}
-        ></LoginForm>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <h2>blogs</h2>
-      <div>
-        {user.name} logged in
-        <button
-          onClick={() => {
-            localStorage.removeItem("loggedInUser");
-            setUser(null);
-          }}
-        >
-          logout
-        </button>
-      </div>
-      <h2>create new </h2>
-      <BlogForm blogs={blogs} setBlogs={setBlogs}></BlogForm>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <Notification message={notification}></Notification>
+      {user === null ? (
+        <div>
+          <h2>log in to application</h2>
+          <LoginForm
+            username={username}
+            password={password}
+            handleLogin={handleLogin}
+            handleUsername={handleUsernameChange}
+            handlePassword={handlePasswordChange}
+          ></LoginForm>
+        </div>
+      ) : (
+        <div>
+          <h2>blogs</h2>
+          <div>
+            {user.name} logged in
+            <button
+              onClick={() => {
+                localStorage.removeItem("loggedInUser");
+                setUser(null);
+              }}
+            >
+              logout
+            </button>
+          </div>
+          <h2>create new </h2>
+          <BlogForm blogs={blogs} setBlogs={setBlogs}></BlogForm>
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
