@@ -88,7 +88,11 @@ const App = () => {
             </button>
           </div>
           <h2>create new </h2>
-          <BlogForm blogs={blogs} setBlogs={setBlogs}></BlogForm>
+          <BlogForm
+            blogs={blogs}
+            setBlogs={setBlogs}
+            handleNotification={handleNotification}
+          ></BlogForm>
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}

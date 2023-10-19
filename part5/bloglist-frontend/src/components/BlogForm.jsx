@@ -29,7 +29,12 @@ const BlogForm = ({ blogs, setBlogs, handleNotification }) => {
           message: `a new blog ${newBlog.title} by ${newBlog.author}`,
         });
       })
-      .catch((err) => console.log(err));
+      .catch(() => {
+        handleNotification({
+          type: "error",
+          message: "an error happened while creating blog",
+        });
+      });
     setAuthor("");
     setTitle("");
     setUrl("");
