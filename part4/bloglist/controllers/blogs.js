@@ -56,24 +56,23 @@ blogsRouter.delete(
   }
 );
 
-blogsRouter.put("/:id", async (request, response, next) => {
-  try {
-    const blog = await Blog.findById(request.params.id);
-    if (blog.user.toString() !== request.user._id.toString()) {
-      return response.status(403).json({ error: "unauthorized" });
+blogsRouter.put(
+  "/:id",
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      const updatedBlog = await Blog.findByIdAndUpdate(
+        request.params.id,
+        request.body,
+        {
+          new: true,
+        }
+      );
+      response.json(updatedBlog).end();
+    } catch (error) {
+      next(error);
     }
-
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
-      request.body,
-      {
-        new: true,
-      }
-    );
-    response.json(updatedBlog).end();
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 module.exports = blogsRouter;
