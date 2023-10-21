@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react";
-import Blogs from "./components/Blogs";
-import LoginForm from "./components/LoginForm";
-import BlogForm from "./components/BlogForm";
-import blogService from "./services/blogs";
-import Notification from "./components/Notification";
-import Togglable from "./components/Togglable";
+import { useState, useEffect } from 'react';
+import { Blogs } from './components/Blogs';
+import LoginForm from './components/LoginForm';
+import BlogForm from './components/BlogForm';
+import blogService from './services/blogs';
+import Notification from './components/Notification';
+import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [notification, setNotification] = useState({ type: "", body: "" });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [notification, setNotification] = useState({ type: '', body: '' });
   const [user, setUser] = useState(null);
 
   const handleNotification = (message) => {
     setNotification(message);
     setTimeout(() => {
-      setNotification("");
+      setNotification('');
     }, 5000);
   };
 
@@ -27,16 +27,16 @@ const App = () => {
       .then((user) => {
         setUser(user);
         blogService.setToken(user.token);
-        localStorage.setItem("loggedInUser", JSON.stringify(user));
+        localStorage.setItem('loggedInUser', JSON.stringify(user));
       })
       .catch(() => {
         handleNotification({
-          type: "error",
-          message: "wrong username or password",
+          type: 'error',
+          message: 'wrong username or password',
         });
       });
-    setPassword("");
-    setUsername("");
+    setPassword('');
+    setUsername('');
   };
 
   const handleUsernameChange = ({ target }) => {
@@ -52,7 +52,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem("loggedInUser");
+    const loggedInUser = localStorage.getItem('loggedInUser');
     if (loggedInUser) {
       const user = JSON.parse(loggedInUser);
       setUser(user);
@@ -81,7 +81,7 @@ const App = () => {
             {user.name} logged in
             <button
               onClick={() => {
-                localStorage.removeItem("loggedInUser");
+                localStorage.removeItem('loggedInUser');
                 setUser(null);
               }}
             >
@@ -89,7 +89,7 @@ const App = () => {
             </button>
           </div>
           <h2>create new </h2>
-          <Togglable buttonLabel="new blog">
+          <Togglable buttonLabel='new blog'>
             <BlogForm
               blogs={blogs}
               setBlogs={setBlogs}

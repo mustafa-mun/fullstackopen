@@ -1,5 +1,5 @@
-import { useState } from "react";
-import blogService from "../services/blogs";
+import { useState } from 'react';
+import blogService from '../services/blogs';
 
 const Blog = ({ blog, blogs, setBlogs, user }) => {
   const [viewDetails, setViewDetails] = useState(false);
@@ -8,21 +8,23 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
   };
 
   const removeStyle = {
-    backgroundColor: "red",
-    color: "white",
+    backgroundColor: 'red',
+    color: 'white',
   };
 
   if (!viewDetails) {
     return (
-      <div style={blogStyle}>
-        {blog.title} {blog.author}{" "}
-        <button onClick={() => setViewDetails(true)}>view</button>
+      <div className='blog' style={blogStyle}>
+        {blog.title} {blog.author}{' '}
+        <button id='view' onClick={() => setViewDetails(true)}>
+          view
+        </button>
       </div>
     );
   }
@@ -40,19 +42,22 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div>
-        {blog.title} {blog.author}{" "}
-        <button onClick={() => setViewDetails(false)}>hide</button>
+        <p>
+          {blog.title} {blog.author}{' '}
+        </p>
+        <button id='hide' onClick={() => setViewDetails(false)}>
+          hide
+        </button>
+        <br />
       </div>
       <div>{blog.url}</div>
       <div>
-        likes {likes}{" "}
+        <p>likes {likes}</p>
         <button
           onClick={() => {
-            blogService
-              .update(blog.id, { likes: likes + 1 })
-              .catch((err) => console.log(err));
+            blogService.update(blog.id, { likes: likes + 1 }).catch((err) => console.log(err));
             setLikes(likes + 1);
           }}
         >
@@ -73,14 +78,8 @@ const Blogs = ({ blogs, setBlogs, user }) => {
   return blogs
     .sort((b1, b2) => (b1.likes < b2.likes ? 1 : b1.likes > b2.likes ? -1 : 0))
     .map((blog) => (
-      <Blog
-        key={blog.id}
-        blog={blog}
-        blogs={blogs}
-        setBlogs={setBlogs}
-        user={user}
-      />
+      <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} user={user} />
     ));
 };
 
-export default Blogs;
+export { Blog, Blogs };

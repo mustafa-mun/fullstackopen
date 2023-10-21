@@ -1,10 +1,10 @@
-import { useState } from "react";
-import blogService from "../services/blogs";
+import { useState } from 'react';
+import blogService from '../services/blogs';
 
 const BlogForm = ({ blogs, setBlogs, handleNotification }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
 
   const handleTitleChange = ({ target }) => {
     setTitle(target.value);
@@ -25,19 +25,19 @@ const BlogForm = ({ blogs, setBlogs, handleNotification }) => {
       .then((newBlog) => {
         setBlogs(blogs.concat(newBlog));
         handleNotification({
-          type: "info",
+          type: 'info',
           message: `a new blog ${newBlog.title} by ${newBlog.author}`,
         });
       })
       .catch(() => {
         handleNotification({
-          type: "error",
-          message: "an error happened while creating blog",
+          type: 'error',
+          message: 'an error happened while creating blog',
         });
       });
-    setAuthor("");
-    setTitle("");
-    setUrl("");
+    setAuthor('');
+    setTitle('');
+    setUrl('');
   };
 
   return (
