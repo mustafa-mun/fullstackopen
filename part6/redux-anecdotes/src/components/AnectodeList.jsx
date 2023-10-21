@@ -3,9 +3,11 @@ import { voteAnectode } from "../reducers/anecdoteReducer";
 
 const AnectodeList = () => {
   const anecdotes = useSelector((state) =>
-    state.sort((a1, a2) =>
-      a1.votes < a2.votes ? 1 : a1.votes > a2.votes ? -1 : 0
-    )
+    state.anectodes
+      .filter((anc) => anc.content.toLowerCase().includes(state.filter))
+      .sort((a1, a2) =>
+        a1.votes < a2.votes ? 1 : a1.votes > a2.votes ? -1 : 0
+      )
   );
   const dispatch = useDispatch();
 
