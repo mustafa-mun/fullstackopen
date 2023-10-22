@@ -4,14 +4,23 @@ import {
   setNotification,
   resetNotification,
 } from "../reducers/notificationReducer";
+import { createSelector } from "@reduxjs/toolkit";
 
 const AnectodeList = () => {
+  const filteredAndSortedAnecdotesSelector = createSelector(
+    (state) => state.anectodes,
+    (state) => state.filter,
+    (anectodes, filter) => {
+      return anectodes
+        .filter((anc) => anc.content.toLowerCase().includes(filter))
+        .sort((a1, a2) =>
+          a1.votes < a2.votes ? 1 : a1.votes > a2.votes ? -1 : 0
+        );
+    }
+  );
+
   const anecdotes = useSelector((state) =>
-    state.anectodes
-      .filter((anc) => anc.content.toLowerCase().includes(state.filter))
-      .sort((a1, a2) =>
-        a1.votes < a2.votes ? 1 : a1.votes > a2.votes ? -1 : 0
-      )
+    filteredAndSortedAnecdotesSelector(state)
   );
   const dispatch = useDispatch();
 
