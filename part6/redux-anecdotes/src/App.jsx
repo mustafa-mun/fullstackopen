@@ -4,19 +4,13 @@ import AnectodeList from "./components/AnectodeList";
 import Filter from "./components/Filter";
 import Notification from "./components/Notification";
 import { useDispatch } from "react-redux";
-import anectodeService from "./services/anectodeService";
-import { setAnectodes } from "./reducers/anecdoteReducer";
+import { initializeAnecdotes } from "./reducers/anecdoteReducer";
 
 const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    anectodeService
-      .getAll()
-      .then((anectodes) => {
-        dispatch(setAnectodes(anectodes));
-      })
-      .catch((err) => console.log(err));
+    dispatch(initializeAnecdotes());
   }, []);
 
   return (

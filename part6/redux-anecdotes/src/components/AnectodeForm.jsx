@@ -1,28 +1,15 @@
 import { useDispatch } from "react-redux";
-import { appendAnectode } from "../reducers/anecdoteReducer";
-import {
-  setNotification,
-  resetNotification,
-} from "../reducers/notificationReducer";
-import asObject from "../../utils/anectodeHelper";
-import anectodeService from "../services/anectodeService";
+import { setNotification } from "../reducers/notificationReducer";
+import { createAnecdote } from "../reducers/anecdoteReducer";
 
 const AnectodeForm = () => {
   const dispatch = useDispatch();
 
   const submitAnectode = (event) => {
     event.preventDefault();
-    const newAnectode = asObject(event.target.anectode.value);
-    anectodeService
-      .create(newAnectode)
-      .then(() => {
-        dispatch(appendAnectode(newAnectode));
-        dispatch(setNotification(`Anectode "${newAnectode.content}" is added`));
-        setTimeout(() => {
-          dispatch(resetNotification());
-        }, 5000);
-      })
-      .catch((err) => console.log(err));
+    const newAnecdote = event.target.anectode.value;
+    dispatch(createAnecdote(newAnecdote));
+    dispatch(setNotification(`Anectode "${newAnecdote}" is added`, 5));
   };
   return (
     <div>
