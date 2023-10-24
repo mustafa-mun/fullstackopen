@@ -1,3 +1,5 @@
+import { isNotNumber } from "./utils/helper";
+
 interface Result {
   periodLength: number;
   trainingDays: number;
@@ -17,7 +19,7 @@ const parseExerciseArguments = (args: string[]): exerciseValues => {
   if (args.length < 2) throw new Error("Not enough arguments");
 
   let dailyHours: number[] = args.slice(3, args.length).map((val) => {
-    if (!isNaN(Number(val))) {
+    if (!isNotNumber(val)) {
       return Number(val);
     }
     throw new Error("daily hours needs to be numbers");
@@ -25,7 +27,7 @@ const parseExerciseArguments = (args: string[]): exerciseValues => {
 
   const target = Number(args[2]);
 
-  if (isNaN(target)) {
+  if (isNotNumber(target)) {
     throw new Error("Target must be a number value!");
   }
 
