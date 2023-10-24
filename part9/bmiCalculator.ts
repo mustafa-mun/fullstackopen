@@ -1,25 +1,25 @@
-import { isNotNumber } from "./utils/helper";
+// import { isNotNumber } from "./utils/helper";
 
-interface bmiValues {
-  height: number;
-  kg: number;
-}
+// interface bmiValues {
+//   height: number;
+//   kg: number;
+// }
 
-const parseBmiArguments = (args: string[]): bmiValues => {
-  if (args.length < 4) throw new Error("Not enough arguments");
-  if (args.length > 4) throw new Error("Too many arguments");
+// const parseBmiArguments = (args: string[]): bmiValues => {
+//   if (args.length < 4) throw new Error("Not enough arguments");
+//   if (args.length > 4) throw new Error("Too many arguments");
 
-  if (!isNotNumber(args[2]) && !isNotNumber(args[3])) {
-    return {
-      height: Number(args[2]),
-      kg: Number(args[3]),
-    };
-  } else {
-    throw new Error("Provided values were not numbers!");
-  }
-};
+//   if (!isNotNumber(args[2]) && !isNotNumber(args[3])) {
+//     return {
+//       height: Number(args[2]),
+//       kg: Number(args[3]),
+//     };
+//   } else {
+//     throw new Error("Provided values were not numbers!");
+//   }
+// };
 
-const calculateBmi = (height: number, kg: number): string => {
+export const calculateBmi = (height: number, kg: number): string => {
   const bmi: number = kg / Math.pow(height / 100, 2);
 
   let message: string = "";
@@ -59,5 +59,5 @@ const calculateBmi = (height: number, kg: number): string => {
   return message;
 };
 
-const bmiValues = parseBmiArguments(process.argv);
-console.log(calculateBmi(bmiValues.height, bmiValues.kg));
+// const bmiValues = parseBmiArguments(process.argv);
+// console.log(calculateBmi(bmiValues.height, bmiValues.kg));

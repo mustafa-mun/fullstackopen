@@ -1,4 +1,4 @@
-import { isNotNumber } from "./utils/helper";
+// import { isNotNumber } from "./utils/helper";
 
 interface Result {
   periodLength: number;
@@ -10,34 +10,37 @@ interface Result {
   average: number;
 }
 
-interface exerciseValues {
-  dailyHours: number[];
-  target: number;
-}
+// interface exerciseValues {
+//   dailyHours: number[];
+//   target: number;
+// }
 
-const parseExerciseArguments = (args: string[]): exerciseValues => {
-  if (args.length < 2) throw new Error("Not enough arguments");
+// const parseExerciseArguments = (args: string[]): exerciseValues => {
+//   if (args.length < 2) throw new Error("Not enough arguments");
 
-  let dailyHours: number[] = args.slice(3, args.length).map((val) => {
-    if (!isNotNumber(val)) {
-      return Number(val);
-    }
-    throw new Error("daily hours needs to be numbers");
-  });
+//   let dailyHours: number[] = args.slice(3, args.length).map((val) => {
+//     if (!isNotNumber(val)) {
+//       return Number(val);
+//     }
+//     throw new Error("daily hours needs to be numbers");
+//   });
 
-  const target = Number(args[2]);
+//   const target = Number(args[2]);
 
-  if (isNotNumber(target)) {
-    throw new Error("Target must be a number value!");
-  }
+//   if (isNotNumber(target)) {
+//     throw new Error("Target must be a number value!");
+//   }
 
-  return {
-    dailyHours,
-    target,
-  };
-};
+//   return {
+//     dailyHours,
+//     target,
+//   };
+// };
 
-const calculateExercises = (dailyHours: number[], target: number): Result => {
+export const calculateExercises = (
+  dailyHours: number[],
+  target: number
+): Result => {
   const ratings: { [key: number]: string } = {
     1: "too bad",
     2: "not too bad but could be better",
@@ -77,7 +80,7 @@ const calculateExercises = (dailyHours: number[], target: number): Result => {
   };
 };
 
-const exerciseValues = parseExerciseArguments(process.argv);
-console.log(
-  calculateExercises(exerciseValues.dailyHours, exerciseValues.target)
-);
+// const exerciseValues = parseExerciseArguments(process.argv);
+// console.log(
+//   calculateExercises(exerciseValues.dailyHours, exerciseValues.target)
+// );
